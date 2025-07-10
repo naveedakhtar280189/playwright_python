@@ -1,0 +1,31 @@
+# Core automation and testing
+pytest
+pytest-playwright
+playwright
+
+# Reporting
+allure-pytest
+
+# Email / Teams / Slack / SMS
+requests
+twilio
+
+# Config and data handling
+pyyaml
+python-dotenv
+
+# Excel / CSV
+pandas
+openpyxl
+
+# API testing
+jsonschema
+
+# Database (MySQL)
+pymysql
+
+# Logging, time, system
+python-dateutil
+
+# Optional - for robust retry/backoff logic (if needed)
+tenacity

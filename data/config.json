@@ -1,0 +1,36 @@
+{
+    "browser": "chromium",
+    "base_url": "https://example.com",
+    "retries": 2,
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 465,
+    "sender_email": "your.email@example.com",
+    "sender_name": "Automation QA",
+    "sender_password": "your_app_password",
+    "twilio_account_sid": "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "twilio_auth_token": "your_auth_token_here",
+    "twilio_from_number": "+1234567890",
+    "teams_webhook_url": "https://outlook.office.com/webhook/...",
+    "slack_webhook_url": "https://hooks.slack.com/services/...",
+    "mysql": {
+        "host": "localhost",
+        "port": 3306,
+        "username": "root",
+        "password": "yourpassword",
+        "database": "testdb"
+    },
+    "paths": {
+        "log_file": "reports/test_log.log",
+        "report_dir": "reports/allure-results",
+        "screenshot_dir": "reports/screenshots",
+        "test_data_dir": "testdata/",
+        "schema_dir": "schemas/"
+    },
+    "environment": {
+    "env": "qa",  
+    "base_url": "https://qa.example.com",
+    "auth_token_env_var": "AUTH_TOKEN", 
+    "db_password_env_var": "DB_PASSWORD",
+    "smtp_password_env_var": "SMTP_PASS"
+  }
+}
