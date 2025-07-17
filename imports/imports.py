@@ -2,12 +2,12 @@
 
 # Pages
 
-from page_objects.pages.login_pages import LoginPage
-from components.pages.header_components import HeaderComponent
+from page_objects.pages.login_pages.login_page import LoginPage
+from components.pages.header_components.header_component import HeaderComponent
 
 # Locators
-from page_objects.locators.login_locators import LoginLocators
-from components.locators.header_locators import HeaderLocators
+from page_objects.locators.login_locators.login_locators import LoginLocators
+from components.locators.header_locators.header_component import HeaderLocators
 
 # You can import test data via loader, e.g., utils/test_data_loader.py
 # or access it in your test like:

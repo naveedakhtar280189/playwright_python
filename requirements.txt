@@ -2,6 +2,7 @@
 pytest
 pytest-playwright
 playwright
+pytest-rerunfailures
 
 # Reporting
 allure-pytest

@@ -53,6 +53,8 @@ pytest tests/ --alluredir=reports/allure-results
 allure serve reports/allure-results
 ```
 
+### HTML Reporting
+pytest --html=reports/test_report.html --self-contained-html .\tests
 ---
 
 ## 🔧 Configurable Settings

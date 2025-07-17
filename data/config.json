@@ -1,6 +1,6 @@
 {
     "browser": "chromium",
-    "base_url": "https://example.com",
+    "base_url": "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login",
     "retries": 2,
     "smtp_server": "smtp.gmail.com",
     "smtp_port": 465,
@@ -28,9 +28,12 @@
     },
     "environment": {
     "env": "qa",  
-    "base_url": "https://qa.example.com",
+    "base_url": "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login",
     "auth_token_env_var": "AUTH_TOKEN", 
     "db_password_env_var": "DB_PASSWORD",
     "smtp_password_env_var": "SMTP_PASS"
+  },
+  "waits":{
+   "default_timeout": 10000
   }
 }

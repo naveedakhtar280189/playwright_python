@@ -3,7 +3,6 @@ import json
 import os
 import requests
 from playwright.sync_api import sync_playwright
-import logging
 
 # ------------------ GLOBAL VARIABLES ------------------
 browser = None
@@ -27,15 +26,10 @@ def load_config(path='data/config.json'):
     cfg["environment"] = env_section
     return cfg
 
-@pytest.fixture
-def base_url():
-    return load_config["environment"]["base_url"]
-
 # ------------------ CLI OPTIONS ------------------
 def pytest_addoption(parser):
-    parser.addoption("--browser", action="store", default="chromium")
     parser.addoption("--retries", action="store", default=0)
-    parser.addoption("--config", action="store", default="framework_config.json")
+    parser.addoption("--config", action="store", default="data/config.json")
 
 # ------------------ SUITE LEVEL SETUP ------------------
 @pytest.fixture(scope="session", autouse=True)
@@ -43,7 +37,6 @@ def before_suite(request):
     global playwright, config
     config_path = request.config.getoption("--config")
     config = load_config(config_path)
-
     print("\n[BeforeSuite] Starting Playwright")
     playwright = sync_playwright().start()
     yield
@@ -52,14 +45,16 @@ def before_suite(request):
 
 # ------------------ PER TEST SETUP ------------------
 @pytest.fixture(scope="function")
-def setup(request):
+def page():
     global browser, context, page
-    browser_name = request.config.getoption("--browser")
-    browser = getattr(playwright, browser_name).launch(headless=False)
+    #browser_name = request.config.getoption("--browser")
+    browser = getattr(playwright, "chromium").launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
+    config = load_config()
+    url = config["environment"]["base_url"]
+    page.goto(url)
     yield page
-    page.goto()
     page.close()
     context.close()
     browser.close()
@@ -76,20 +71,3 @@ def api_session():
         headers["Authorization"] = f"Bearer {token}"
     session.headers.update(headers)
     return session
-
-# ------------------ RETRY HOOK ------------------
-def pytest_runtest_call(item):
-    max_retries = int(item.config.getoption("--retries", 0))
-    retry_count_marker = item.get_closest_marker("retry_count")
-    if retry_count_marker:
-        max_retries = int(retry_count_marker.args[0])
-
-    for attempt in range(max_retries + 1):
-        try:
-            item.runtest()
-            return
-        except Exception as e:
-            if attempt < max_retries:
-                logging.warning(f"[RETRY] {item.name} failed. Retrying {attempt + 1}/{max_retries}...")
-            else:
-                raise

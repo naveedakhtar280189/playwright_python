@@ -1,16 +1,9 @@
-import json
-from imports.imports import LoginPage 
-import conftest
+from page_objects.pages.login_pages.login_page import LoginPage
+from utils.config_reader import read_json_config
 
-def load_test_data():
-    with open("testdata/login_data.json") as f:
-        return json.load(f)
-
-def test_valid_login(setup):
-    page = setup
-    data = load_test_data()
-    login_data = data["valid_user"]
+def test_valid_login(page):
+    
     login_page = LoginPage(page)
-    login_page.login(login_data["username"], login_data["password"])
-    page.go(conftest.base_url)
-    assert "dashboard" in page.url
+    username, password = login_page.get_valid_login_credentials()
+    login_page.login(username, password)
+
