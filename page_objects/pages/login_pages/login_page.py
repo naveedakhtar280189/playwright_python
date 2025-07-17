@@ -1,6 +1,7 @@
 from page_objects.locators.login_locators.login_locators import LoginLocators
 from utils.script_utils import ScriptUtils
 from utils.logger_utils import get_logger 
+from utils.config_reader import read_json_config
 
 logger = get_logger()
 
