@@ -8,27 +8,27 @@ logger = get_logger()
 class LoginPage:
     def __init__(self, page):
         self.page = page
-        logger.debug("📄 LoginPage initialized")
+        logger.debug("LoginPage initialized")
 
     def login(self, username, password):
         try:
-            logger.info("🔐 Starting login process")
-            logger.debug(f"✏️ Entering username: {username}")
+            logger.info("Starting login process")
+            logger.debug(f"Entering username: {username}")
             self.page.fill(LoginLocators.USERNAME_INPUT, username)
 
-            logger.debug(f"🔑 Entering password: {'*' * len(password)}")
+            logger.debug(f"Entering password: {'*' * len(password)}")
             self.page.fill(LoginLocators.PASSWORD_INPUT, password)
 
-            logger.debug("➡️ Clicking the login button")
+            logger.debug("Clicking the login button")
             self.page.click(LoginLocators.LOGIN_BUTTON)
 
-            logger.debug("⏳ Waiting for profile icon to appear")
+            logger.debug("Waiting for profile icon to appear")
             ScriptUtils.assert_element_visible(self.page, LoginLocators.PROFILE_ICON)
 
-            logger.info("✅ Login successful")
+            logger.info("Login successful")
 
         except Exception as e:
-            logger.exception(f"❌ Login failed: {str(e)}")
+            logger.exception(f"Login failed: {str(e)}")
             raise
 
     @staticmethod
@@ -37,13 +37,13 @@ class LoginPage:
         Loads valid login credentials from JSON config and returns them as a tuple.
         """
         try:
-            logger.debug("📖 Reading login data from 'testdata/login_data.json'")
+            logger.debug("Reading login data from 'testdata/login_data.json'")
             data = read_json_config("testdata/login_data.json")
             login_data = data["valid_user"]
             username = login_data["username"]
             password = login_data["password"]
-            logger.debug("✅ Successfully loaded login credentials")
+            logger.debug("Successfully loaded login credentials")
             return username, password
         except Exception as e:
-            logger.exception("❌ Failed to load login credentials")
+            logger.exception("Failed to load login credentials")
             raise

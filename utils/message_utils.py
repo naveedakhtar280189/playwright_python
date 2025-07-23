@@ -8,7 +8,10 @@ from datetime import datetime
 import os
 from twilio.rest import Client
 
-def send_slack_message(webhook_url, message):
+def send_slack_message(message):
+    config_path = "data/config.json"
+    config = read_json_config(config_path)
+    webhook_url = config["slack_webhook"]
     try:
         payload = {"text": message}
         headers = {"Content-Type": "application/json"}
@@ -28,7 +31,10 @@ def send_slack_message(webhook_url, message):
     except Exception as e:
         raise Exception(f"[ERROR] Unexpected error sending Slack message: {str(e)}")
 
-def send_teams_message(webhook_url, message):
+def send_teams_message(message):
+    config_path = "data/config.json"
+    config = read_json_config(config_path)
+    webhook_url = config["teams_webhook"]
     try:
         headers = {"Content-Type": "application/json"}
         payload = {
@@ -60,12 +66,7 @@ def read_json_config(path):
         return json.load(f)
 
 def send_email_from_config(
-    config_path: str,
-    to_emails: list,
-    cc_emails: list,
-    subject_template: str,
-    body_template: str,
-    attachment_relative_paths: list = [],
+    config_path: str = "data/config.json",
     allure_summary: dict = None,
     overall_status: str = "Pass",
     project_root: str = os.getcwd()
@@ -73,11 +74,17 @@ def send_email_from_config(
     try:
         # Load config
         config = read_json_config(config_path)
-        sender_email = config.get("sender_email")
+        sender_email = config["sender_email"]
         sender_name = config.get("sender_name", "Automation Bot")
-        sender_password = config.get("sender_password")
+        sender_password = config["sender_password"]
         smtp_server = config.get("smtp_server", "smtp.gmail.com")
         smtp_port = config.get("smtp_port", 465)
+
+        to_emails = config.get("to_emails", [])
+        cc_emails = config.get("cc_emails", [])
+        subject_template = config.get("subject_template", "Automation Report | {date_time} | {status}")
+        body_template = config.get("body_template", "Execution completed at {date_time}.\nStatus: {status}")
+        attachment_relative_paths = config.get("attachment_relative_paths", [])
 
         # Create the email
         msg = EmailMessage()
@@ -87,6 +94,7 @@ def send_email_from_config(
 
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         summary = allure_summary or {}
+
         subject = subject_template.format(date_time=now, status=overall_status)
         body = body_template.format(date_time=now, status=overall_status, **summary)
 

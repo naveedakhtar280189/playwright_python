@@ -1,7 +1,8 @@
 {
     "browser": "chromium",
-    "base_url": "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login",
-    "retries": 2,
+    "headless": false,
+    "teams_webhook": "",
+    "slack_webhook": "",
     "smtp_server": "smtp.gmail.com",
     "smtp_port": 465,
     "sender_email": "your.email@example.com",
@@ -35,5 +36,18 @@
   },
   "waits":{
    "default_timeout": 10000
-  }
+  },
+  "email_details":
+    {
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 465,
+    "sender_email": "your.email@example.com",
+    "sender_name": "Automation QA",
+    "sender_password": "your_app_password",
+    "to_emails": ["recipient1@example.com"],
+    "cc_emails": ["cc1@example.com"],
+    "subject_template": "Test Report | {date_time} | Status: {status}",
+    "body_template": "Hi,\n\nExecution finished at {date_time}.\nStatus: {status}\nPassed: {passed}\nFailed: {failed}\nSkipped: {skipped}\n\nThanks.",
+    "attachment_relative_paths": ["reports/allure-report/index.html"]
+    }
 }
