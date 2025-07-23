@@ -48,3 +48,4 @@ def parse_allure_summary(allure_report_dir="reports/allure-report") -> dict:
     except Exception as e:
         print(f"[ERROR] Failed to parse Allure summary: {e}")
         return {}
+    

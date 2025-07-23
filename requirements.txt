@@ -3,6 +3,7 @@ pytest
 pytest-playwright
 playwright
 pytest-rerunfailures
+fitz
 
 # Reporting
 allure-pytest

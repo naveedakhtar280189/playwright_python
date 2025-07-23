@@ -8,7 +8,7 @@ from playwright.sync_api import sync_playwright
 from utils.cleanup_utils import delete_old_timestamp_folders
 from utils.message_utils import send_teams_message, send_slack_message, send_email_from_config
 from utils.allure_report import generate_allure_report, parse_allure_summary
-
+from utils.health_check import check_api, check_web_app, check_mobile_backend, check_database
 # ------------------ GLOBAL VARIABLES ------------------
 browser = None
 context = None
@@ -19,6 +19,24 @@ config = {}
 delete_old_timestamp_folders("screenshots", days_old=7)
 delete_old_timestamp_folders("logs", days_old=7)
 delete_old_timestamp_folders("reports", days_old=7)
+
+@pytest.fixture(scope="session", autouse=True)
+def run_health_checks_before_suite():
+    print("\nRunning Health Checks before test suite...")
+    results = {
+        "Web App": check_web_app(),
+        "Mobile Backend": check_mobile_backend(),
+        "API": check_api(),
+        "Database": check_database(),
+    }
+
+    failed = [name for name, passed in results.items() if not passed]
+
+    for name, status in results.items():
+        print(f"  ➤ {name}: {'Healthy' if status else 'Down'}")
+
+    if failed:
+        pytest.exit(f"\n Health Check failed for: {', '.join(failed)}. Aborting test run.\n")
 
 def pytest_sessionfinish(session, exitstatus):
     print("\n[INFO] Post-suite actions started...")

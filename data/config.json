@@ -30,6 +30,8 @@
     "environment": {
     "env": "qa",  
     "base_url": "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login",
+    "api_url": "",
+    "backend_url": "",
     "auth_token_env_var": "AUTH_TOKEN", 
     "db_password_env_var": "DB_PASSWORD",
     "smtp_password_env_var": "SMTP_PASS"
