@@ -27,6 +27,7 @@ def pytest_addoption(parser):
     parser.addoption("--config", action="store", default="data/config.json")
     parser.addoption("--browsers", action="store", default="chromium", help="Comma-separated: chromium,firefox,webkit")
     parser.addoption("--instances", action="store", default="1", help="Instances per browser")
+    parser.addoption("--mcp", action="store_true", help="Enable MCP (Model Component Proxy) for self-healing")
 
 # ------------------ LOAD CONFIG ------------------ #
 def load_config(path='data/config.json'):
@@ -49,22 +50,6 @@ def pytest_generate_tests(metafunc):
     if "browser_instance" in metafunc.fixturenames:
         metafunc.parametrize("browser_instance", params)
 
-# ------------------ HEALTH CHECKS (OPTIONAL) ------------------ #
-# @pytest.fixture(scope="session", autouse=True)
-# def run_health_checks_before_suite():
-#     print("\n[Health Check] Starting...")
-#     results = {
-#         "Web App": check_web_app(),
-#         "Mobile Backend": check_mobile_backend(),
-#         "API": check_api(),
-#         "Database": check_database(),
-#     }
-#     failed = [name for name, ok in results.items() if not ok]
-#     for name, status in results.items():
-#         print(f"  ➤ {name}: {'Healthy' if status else 'DOWN'}")
-#     if failed:
-#         pytest.exit(f"\n[FAIL] Health check failed: {', '.join(failed)}")
-
 # ------------------ SUITE STARTUP ------------------ #
 @pytest.fixture(scope="session", autouse=True)
 def before_suite(request):
@@ -81,9 +66,24 @@ def before_suite(request):
 def page(browser_instance):
     browser_name, _ = browser_instance
     default_headless = config.get("headless", True)
-    args = ["--disable-infobars", "--disable-notifications", "--start-fullscreen", "--no-default-browser-check"]
+    mcp_enabled = config.get("enable_mcp", False)
+    proxy_config = {"server": config.get("mcp_proxy", "http://localhost:3000")} if mcp_enabled else None
 
-    browser = getattr(playwright, browser_name).launch(headless=default_headless, args=args)
+    args = [
+        "--disable-infobars", "--disable-notifications", "--start-fullscreen",
+        "--no-default-browser-check"
+    ]
+    if mcp_enabled:
+        args.append("--proxy-server=http://localhost:3000")
+
+    launch_options = {
+        "headless": default_headless,
+        "args": args,
+    }
+    if proxy_config:
+        launch_options["proxy"] = proxy_config
+
+    browser = getattr(playwright, browser_name).launch(**launch_options)
     context = browser.new_context(accept_downloads=True, viewport={"width": 1920, "height": 1080})
     page = context.new_page()
     page.goto(config["environment"]["base_url"])

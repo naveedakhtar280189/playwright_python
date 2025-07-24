@@ -260,5 +260,20 @@ Pull requests and feedback are welcome. Fork the repo, create a feature branch, 
 Open an issue or contact the maintainer if you'd like help scaling or integrating this with CI/CD pipelines.
 
 ---
+Allure Reporting
+allure generate allure-results --clean -o reports/allure-report
+allure open reports/allure-report
+
+MCP Server
+npx playwright install mcp-server
+
+Start the MCP Server (locally or remote)
+npx playwright mcp-server
+
+# Run with MCP enabled (self-healing mode ON)
+pytest tests/ --mcp
+
+# Run without MCP
+pytest tests/
 
 **Happy Testing! 🚀**
