@@ -4,6 +4,8 @@ pytest-playwright
 playwright
 pytest-rerunfailures
 fitz
+pytest-playwright 
+pytest-xdist
 
 # Reporting
 allure-pytest

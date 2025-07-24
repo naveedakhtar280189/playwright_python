@@ -19,6 +19,7 @@ config = {}
 delete_old_timestamp_folders("screenshots", days_old=7)
 delete_old_timestamp_folders("logs", days_old=7)
 delete_old_timestamp_folders("reports", days_old=7)
+delete_old_timestamp_folders("allure-results", days_old=7)
 
 """ @pytest.fixture(scope="session", autouse=True)
 def run_health_checks_before_suite():

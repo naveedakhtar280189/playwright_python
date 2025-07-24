@@ -1,10 +1,14 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
+
 import os
 import subprocess
 import json
 
-def generate_allure_report(results_dir="allure-results", output_dir="reports/allure-report"):
+def generate_allure_report(results_dir="allure-results", base_output="reports/allure-report"):
     try:
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        output_dir = os.path.join(base_output, f"allure-report-{timestamp}")
+        os.makedirs(output_dir, exist_ok=True)
         print("[INFO] Generating Allure HTML report...")
         os.makedirs(output_dir, exist_ok=True)
         subprocess.run(["allure", "generate", results_dir, "--clean", "-o", output_dir],
