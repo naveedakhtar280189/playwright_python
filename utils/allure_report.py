@@ -1,14 +1,14 @@
 from datetime import timedelta
 import os
 import subprocess
+import json
 
 def generate_allure_report(results_dir="allure-results", output_dir="reports/allure-report"):
     try:
         print("[INFO] Generating Allure HTML report...")
         os.makedirs(output_dir, exist_ok=True)
-        subprocess.run(
-            ["allure", "generate", results_dir, "--clean", "-o", output_dir],
-            check=True
+        subprocess.run(["allure", "generate", results_dir, "--clean", "-o", output_dir],
+            check=True, shell=True
         )
         print(f"[PASS] Allure report generated at: {output_dir}")
     except subprocess.CalledProcessError as e:

@@ -20,7 +20,7 @@ delete_old_timestamp_folders("screenshots", days_old=7)
 delete_old_timestamp_folders("logs", days_old=7)
 delete_old_timestamp_folders("reports", days_old=7)
 
-@pytest.fixture(scope="session", autouse=True)
+""" @pytest.fixture(scope="session", autouse=True)
 def run_health_checks_before_suite():
     print("\nRunning Health Checks before test suite...")
     results = {
@@ -37,7 +37,7 @@ def run_health_checks_before_suite():
 
     if failed:
         pytest.exit(f"\n Health Check failed for: {', '.join(failed)}. Aborting test run.\n")
-
+ """
 def pytest_sessionfinish(session, exitstatus):
     print("\n[INFO] Post-suite actions started...")
 
@@ -49,7 +49,7 @@ def pytest_sessionfinish(session, exitstatus):
     overall_status = "Fail" if summary.get("failed", 0) > 0 else "Pass"
 
     # 3. Send Email with inline HTML table and optional attachment
-    send_email_from_config(
+    """ send_email_from_config(
         allure_summary=summary,
         overall_status=overall_status
     )
@@ -57,7 +57,7 @@ def pytest_sessionfinish(session, exitstatus):
     msg = f"Test Suite Completed\nStatus: {overall_status}\nPassed: {summary.get('passed', 0)}, Failed: {summary.get('failed', 0)}, Skipped: {summary.get('skipped', 0)}, Duration: {summary.get('duration', 'N/A')}"
     send_teams_message(msg)
     send_slack_message(msg)
-
+ """
     print("[INFO] Post-suite actions completed.")
 
 # ------------------ CONFIG LOADER ------------------
