@@ -1,84 +1,264 @@
-# Playwright Automation Framework (Web + API)
+# 🧪 Playwright + Pytest Automation Framework (Python)
 
-This is a modular Python-based test automation framework using **Playwright** for web UI and **Requests** for API automation. The design follows best practices such as Page Object Model (POM), reusable components, structured test data, and configuration-driven execution.
+This is a modern, scalable **Python automation framework** using **Playwright** and **Pytest**, designed for UI and API testing with built-in support for:
 
----
-
-## ✅ Features
-
-- 🧪 UI Automation with Playwright
-- 🔗 API Automation using `requests`
-- 📄 Page Object Model with locators and reusable components
-- 🧰 Central config (`config.json`) to manage settings and environments
-- 🧪 Test data in JSON files
-- ♻️ Fixtures for setup, teardown, and shared contexts
-- 🔁 Retry support via CLI and hooks
-- 📦 Scalable for integration with Allure, DB, Slack, Email, and more
+- 🔄 Parallel & cross-browser execution  
+- 📊 Reporting via Allure  
+- 🖼️ Screenshot on failure  
+- 📤 Notifications (Email, Slack, Teams)  
+- 🛠 Health checks  
+- 🧹 Periodic cleanup  
+- 📁 Multi-environment support via config files  
 
 ---
 
-## 🗂 Folder Structure
+## 🛠 Framework Overview
+
+| Feature                   | Description                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
+| **Framework**             | Custom-built using `pytest`, `playwright`                                   |
+| **Language**              | Python 3.8+                                                                 |
+| **Test Types**            | UI (via Playwright), API (via requests)                                     |
+| **Browsers Supported**    | Chromium, Firefox, WebKit                                                   |
+| **Parallel Execution**    | Yes – via `pytest-xdist`                                                    |
+| **Retry Logic**           | Yes – via `--retries` (manual, extendable with `pytest-rerunfailures`)      |
+| **Reports**               | Allure (with optional HTML, CLI)                                            |
+| **CI/CD Ready**           | ✅ Fully customizable for Jenkins, GitHub Actions, GitLab, etc.              |
+
+---
+
+## 📁 Folder Structure
 
 ```
-.
-├── pages/               # Page classes and components
-├── locators/            # Locator-only files (decoupled from logic)
-├── testdata/            # Input test data in JSON
-├── tests/               # All test cases
-├── framework_config.json# Centralized config
-├── conftest.py          # Pytest hooks, setup, teardown
-├── context_fixtures.py  # Reusable fixture combining UI + API
-└── framework/
-    └── imports.py       # Central import file for all pages and locators
+project/
+├── conftest.py                    # Core logic: CLI, fixtures, setup, teardown
+├── data/
+│   └── config.json                # Environment, browser & auth config
+├── tests/
+│   ├── test_ui_sample.py         # Sample UI test
+│   └── test_api_sample.py        # Sample API test
+├── utils/
+│   ├── allure_report.py          # Allure report generation & summary
+│   ├── cleanup_utils.py          # Folder cleanup logic
+│   ├── health_check.py           # App/API/DB health validations
+│   └── message_utils.py          # Email, Slack, Teams messaging
+├── screenshots/                  # Screenshots on failure (timestamped)
+├── reports/                      # Allure report output
+├── logs/                         # Optional logging support
+├── allure-results/               # Allure raw result files
+├── requirements.txt              # Python dependency list
+└── README.md                     # You're here
 ```
 
 ---
 
-## 🚀 How to Run
+## 🧪 Sample Tests
 
-### Install dependencies
+### ✅ UI Test: `test_ui_sample.py`
+
+```python
+def test_open_google(page):
+    page.goto("https://www.google.com")
+    assert "Google" in page.title()
+```
+
+### ✅ API Test: `test_api_sample.py`
+
+```python
+def test_api_get_user(api_session):
+    response = api_session.get("https://jsonplaceholder.typicode.com/users/1")
+    assert response.status_code == 200
+    assert response.json()["id"] == 1
+```
+
+---
+
+## ⚙️ Configuration
+
+Update `data/config.json`:
+
+```json
+{
+  "browser": "chromium",
+  "headless": true,
+  "environment": {
+    "base_url": "https://example.com",
+    "auth_token_env_var": "AUTH_TOKEN"
+  }
+}
+```
+
+🔒 Set token securely using environment variable:
+```bash
+export AUTH_TOKEN="your-token"
+```
+
+---
+
+## 🧼 Auto Cleanup
+
+The framework automatically deletes folders older than 7 days from:
+
+- `screenshots/`
+- `logs/`
+- `reports/`
+- `allure-results/`
+
+Controlled via `delete_old_timestamp_folders()` in `conftest.py`.
+
+---
+
+## 📸 Screenshot on Failure
+
+On test failure, full-page screenshot is saved at:
+
+```
+screenshots/<timestamp>/<testname>.png
+```
+
+---
+
+## 📤 Notifications (Optional)
+
+Enable and configure in `conftest.py`:
+
+- Email via `send_email_from_config()`
+- Slack via `send_slack_message()`
+- Teams via `send_teams_message()`
+
+---
+
+## 📊 Allure Reporting
+
+### ✅ Generate (Automatically Done in `conftest.py`)
+```bash
+allure generate allure-results/ -o reports/allure-report --clean
+```
+
+### ✅ Serve locally
+```bash
+allure serve allure-results/
+```
+
+---
+
+## 🧪 Test Execution Commands
+
+### ✅ 1. Run Single Browser, Single Instance
+
+```bash
+pytest --browsers=chromium --instances=1
+```
+
+---
+
+### ✅ 2. Run Single Browser, Multiple Instances (Parallel)
+
+```bash
+pytest -n 4 --browsers=chromium --instances=4
+```
+
+---
+
+### ✅ 3. Run Multiple Browsers (Parallel Across All)
+
+```bash
+pytest -n auto --browsers=chromium,firefox,webkit --instances=2
+```
+
+---
+
+### ✅ 4. Run with Config Override
+
+```bash
+pytest --config=data/staging_config.json
+```
+
+---
+
+### ✅ 5. Run with Manual Retry (via rerunfailures plugin)
+
+```bash
+pip install pytest-rerunfailures
+pytest --reruns=2 --browsers=chromium --instances=2
+```
+
+> Alternatively, you can implement retry logic inside `conftest.py` via `--retries` (manual control).
+
+---
+
+## 🧩 CLI Options
+
+| Option            | Default            | Description                                     |
+|-------------------|--------------------|-------------------------------------------------|
+| `--browsers`       | `chromium`         | Comma-separated list: chromium,firefox,webkit   |
+| `--instances`      | `1`                | Number of instances per browser                 |
+| `--config`         | `data/config.json` | Path to config file                             |
+| `--retries`        | `0`                | Retry logic (manually controlled)               |
+
+---
+
+## 📦 Requirements
+
+Create a `requirements.txt` with:
+
+```
+pytest
+pytest-xdist
+pytest-playwright
+requests
+allure-pytest
+pytest-rerunfailures
+```
+
+Install with:
+
 ```bash
 pip install -r requirements.txt
 playwright install
 ```
 
-### Run UI Test
-```bash
-pytest tests/ --browser=chromium
-```
-
-### With Allure Reporting (optional)
-```bash
-pytest tests/ --alluredir=reports/allure-results
-allure serve reports/allure-results
-```
-
-### HTML Reporting
-pytest --html=reports/test_report.html --self-contained-html .\tests
 ---
 
-## 🔧 Configurable Settings
+## 🚦 Health Checks (Optional)
 
-Located in `config.json`:
-- Base URLs
-- Browser selection
-- Retry counts
-- SMTP / Slack / Teams / DB credentials
-
----
-
-## 📬 Test Data Usage
-
+Enable in `conftest.py`:
 ```python
-with open("testdata/login_data.json") as f:
-    data = json.load(f)
+@pytest.fixture(scope="session", autouse=True)
+def run_health_checks_before_suite():
+    ...
 ```
+
+Checks:
+- Web app reachable
+- API alive
+- DB connection
+- Mobile backend alive
+
+Fails test run if any system is down.
+
+---
+
+## 🧬 Extendability
+
+You can extend the framework to:
+- Run tagged or grouped tests (`pytest -m smoke`)
+- Use data-driven tests via `@pytest.mark.parametrize`
+- Include visual testing tools (e.g. Percy)
+- Integrate with CI/CD (Jenkins, GitHub Actions, GitLab)
 
 ---
 
 ## 🤝 Contributing
 
-Open to collaboration for:
-- Mobile extension via Appium
-- Reporting plugins
-- Jenkins/Azure pipeline YAMLs
+Pull requests and feedback are welcome. Fork the repo, create a feature branch, and submit a PR.
+
+---
+
+## 📧 Need Help?
+
+Open an issue or contact the maintainer if you'd like help scaling or integrating this with CI/CD pipelines.
+
+---
+
+**Happy Testing! 🚀**
