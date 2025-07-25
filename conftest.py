@@ -106,19 +106,27 @@ def api_session():
     return session
 
 # ------------------ SCREENSHOT ON FAILURE ------------------ #
+
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
 
+    # Only act after the test "call" phase and if it failed
     if report.when == "call" and report.failed:
+        # Try to get the Playwright page object (may not exist for API tests)
         page = item.funcargs.get("page", None)
-        if page:
-            test_name = re.sub(r'[^a-zA-Z0-9_]+', '_', item.name)
-            screenshot_path = os.path.join(SCREENSHOT_DIR, f"{test_name}.png")
-            page.screenshot(path=screenshot_path, full_page=True)
-            print(f"\n[Screenshot] Saved: {screenshot_path}")
 
+        if page and hasattr(page, "screenshot"):
+            try:
+                test_name = re.sub(r'[^a-zA-Z0-9_]+', '_', item.name)
+                screenshot_path = os.path.join(SCREENSHOT_DIR, f"{test_name}.png")
+                page.screenshot(path=screenshot_path, full_page=True)
+                print(f"\n[Screenshot] Saved: {screenshot_path}")
+            except Exception as e:
+                print(f"[WARN] Screenshot capture failed: {e}")
+        else:
+            print(f"[INFO] No Playwright page object — skipping screenshot for: {item.name}")
 # ------------------ POST-SUITE ACTIONS ------------------ #
 def pytest_sessionfinish(session, exitstatus):
     print("\n[Post-Suite] Generating Allure report...")
